@@ -1,0 +1,52 @@
+미완성 시장찾기(소분류작동x)
+
+<body>
+
+<select id="first_category">
+  <option value="" selected disabled>대분류</option>
+  {% for first_category in categorized_data.keys %}
+    <option value="{{ first_category }}">{{ first_category }}</option>
+  {% endfor %}
+</select>
+
+<select id="second_category" disabled>
+  <option value="" selected disabled>소분류</option>
+</select>
+
+<div id="market_data"></div>
+
+<script>
+document.getElementById('first_category').addEventListener('change', function() {
+  var selectedFirstCategory = this.value;
+  var secondCategoryDropdown = document.getElementById('second_category');
+  
+  secondCategoryDropdown.disabled = false;
+  
+  secondCategoryDropdown.innerHTML = '<option value="" selected disabled>소분류</option>'; // 수정된 부분
+  
+  var secondCategories = categorized_data[selectedFirstCategory];
+  for (var secondCategory in secondCategories) {
+    var option = document.createElement('option');
+    option.value = secondCategory;
+    option.textContent = secondCategory;
+    secondCategoryDropdown.appendChild(option);
+  }
+});
+
+document.getElementById('second_category').addEventListener('change', function() {
+  var selectedSecondCategory = this.value;
+  var selectedFirstCategory = document.getElementById('first_category').value;
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/market/data?first_category=' + selectedFirstCategory + '&second_category=' + selectedSecondCategory, true);
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      document.getElementById('market_data').innerHTML = xhr.responseText;
+    }
+  };
+  xhr.send();
+});
+</script>
+
+</body>
+</html>
