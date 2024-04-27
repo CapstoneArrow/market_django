@@ -39,7 +39,7 @@ temp_data = [
 
 
 # 전통시장정보데이터의 소재지도로명주소를 이용하여 대분류, 소분류
-def market_list_view(request):
+def list_view(request):
     
     # 데이터 속 주소에 맞게 수정 예정 ex) 서울특별시 <-> 서울시
     first_categories = ["서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시",
@@ -94,4 +94,4 @@ def market_list_view(request):
                     if second_category in data.소재지도로명주소:
                         categorized_data[first_category][second_category].append(data)
    
-    return render(request, 'market/market_list.html', {'categorized_data': categorized_data})
+    return render(request, 'market/list.html', {'categorized_data': categorized_data})

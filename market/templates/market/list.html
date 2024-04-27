@@ -22,7 +22,7 @@ document.getElementById('first_category').addEventListener('change', function() 
   
   secondCategoryDropdown.disabled = false;
   
-  secondCategoryDropdown.innerHTML = '<option value="" selected disabled>소분류</option>'; // 수정된 부분
+  secondCategoryDropdown.innerHTML = '<option value="" selected disabled>소분류</option>';
   
   var secondCategories = categorized_data[selectedFirstCategory];
   for (var secondCategory in secondCategories) {
