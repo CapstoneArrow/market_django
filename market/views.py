@@ -2,17 +2,6 @@ from django.shortcuts import render
 
 
 """
-데이터 연동 시 사용
-
-import firebase_admin
-from firebase_admin import credentials, firestore
-
-
-# Firebase 서비스 계정 키 필요
-cred = credentials.Certificate("path/to/serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
-
-db = firestore.client()
 
 data_ref = db.collection("전통시장정보데이터")
 query_snapshot = data_ref.get()

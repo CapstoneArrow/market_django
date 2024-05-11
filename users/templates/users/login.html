@@ -1,8 +1,11 @@
+<a href="{% url 'home:home' %}">home</a><br><br>
+
 로그인 페이지
 
 <br>
 {% if user.is_authenticated %}
     {{ user.username }}님 환영합니다.<br><br>
+
     <a href="{% url 'user:logout' %}"> 로그아웃</a><br>
     <a href="{% url 'user:update_profile' %}"> 회원정보 변경</a>
 

@@ -1,0 +1,20 @@
+<a href="{% url 'home:home' %}">home</a><br><br>
+
+게시글 작성
+<br><br>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_title">제목:</label>
+        {{ form.title }}
+    </div>
+    <div class="form-group">
+        <label for="id_content">내용:</label>
+        {{ form.content }}
+    </div>
+    <div class="form-group">
+        <label for="id_attachments">첨부 파일:</label>
+        {{ form.attachments }}
+    </div>
+    <button type="submit" class="btn btn-primary">작성 완료</button>
+</form>

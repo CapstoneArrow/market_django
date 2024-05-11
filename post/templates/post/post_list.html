@@ -1,0 +1,22 @@
+<a href="{% url 'home:home' %}">home</a><br><br>
+
+지역 축제
+<br>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 목록</title>
+</head>
+<body>
+    <h1>게시물 목록</h1>
+    <br><a href="{% url 'post:create_post' %}">작성</a>
+    <ul>
+        {% for single_post in post %}
+            <li><a href="{% url 'post:view_post' post_id=single_post.id %}">{{ single_post.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

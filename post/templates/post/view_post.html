@@ -1,0 +1,22 @@
+<a href="{% url 'home:home' %}">home</a><br><br>
+
+지역 축제
+<br>
+
+<h2>{{ post.title }}</h2>
+<p>{{ post.content }}</p>
+{% if post.attachments.all %}
+    <h3>첨부 파일</h3>
+    <ul>
+    {% for attachment in post.attachments.all %}
+        <li><a href="{{ attachment.file.url }}" target="_blank">{{ attachment.file.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<br>
+<a href="{% url 'post:edit_post' post_id=post.id %}">수정</a><br>
+<a href="{% url 'post:delete_post' post_id=post.id %}">삭제</a>
+
+<br><br>
+<a href="{% url 'post:post_list' %}">목록</a>

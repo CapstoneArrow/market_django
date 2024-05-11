@@ -4,6 +4,6 @@ from . import views
 app_name = "market"
 
 urlpatterns = [
-    path("list", views.list_view, name = "list"),
+    path("list/", views.list_view, name = "list"),
     
 ]

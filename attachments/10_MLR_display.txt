@@ -1,0 +1,49 @@
+셀 생성
+
+plt.plot(W1_history[:,0],label="w11")
+plt.plot(W1_history[:,1],label='w21')
+plt.plot(W1_history[:,2],label='w31')
+plt.plot(W2_history[:,0],label="w12")
+plt.plot(W2_history[:,1],label='w22')
+plt.plot(W2_history[:,2],label='w32')
+plt.plot(W3_history[:,0],label="w13")
+plt.plot(W3_history[:,1],label='w23')
+plt.plot(W3_history[:,2],label='w33')
+plt.grid()
+plt.legend()
+plt.title('w history')
+plt.show()
+
+plt.plot(cost_history)
+plt.title('cost history')
+plt.show()
+
+셀 생성
+
+y_true = np.floor(np.linspace(0,3,class_data_len*3,endpoint=False)).reshape(-1,1)
+print(np.sum(y_true==0))
+print(np.sum(y_true==1))
+print(np.sum(y_true==2))
+
+y_est = np.zeros((data_len,1))
+for ii in range(data_len):
+#     y_est[ii] = np.dot(W,data_learn[ii,:])
+    y_est[ii] = np.argmax(softmax(W,data_learn[ii,:]))
+
+plt.plot(y_true,'o-',label='true')
+plt.plot(y_est,'.-',label='estimate')
+plt.legend()
+plt.grid()
+plt.show()
+
+셀 생성
+results = y_true-y_est!=0
+flase_index = np.where(results)
+plt.plot(data_class_1[:,0],data_class_1[:,1],'ob',label='class A')
+plt.plot(data_class_2[:,0],data_class_2[:,1],'or',label='class B')
+plt.plot(data_class_3[:,0],data_class_3[:,1],'dg',label='class C')
+plt.plot(data_all[flase_index,0],data_all[flase_index,1],'k.')
+plt.legend()
+plt.axis('equal')
+plt.grid()
+plt.show()
