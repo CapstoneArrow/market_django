@@ -15,33 +15,12 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            save_post_to_firebase(post)
 
             return redirect('post:view_post', post_id=post.id)
     else:
         form = PostForm()
-    return render(request, 'post/create_post.html', {'form': form})
-
-
-# Firebase 정보 저장
-def save_post_to_firebase(post):
-    # 게시글 정보 저장
-    post_ref = db.reference('posts').push()
-    post_ref.set({
-        'title': post.title,
-        'content': post.content,
-        'author_id': post.author.id
-    })
-    # 게시글에 대한 첨부 파일 정보 저장
-    for attachment in post.attachments.all():
-        attachment_ref = post_ref.child('attachments').push()
-        attachment_ref.set({
-            'file_url': attachment.file.url,
-            'file_name': attachment.file.name
-        })
+    return render(request, 'post/create_post.html', {'form': form})    
     
-    post.firebase_id = post_ref.key
-    post.save()
 
 
 # 게시글 수정

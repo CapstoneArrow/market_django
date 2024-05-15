@@ -1,5 +1,6 @@
-from django.shortcuts import render
-
+from django.shortcuts import render, get_object_or_404
+from .models import MarketData
+from django.http import JsonResponse
 
 """
 
@@ -10,31 +11,34 @@ market_data = [doc.to_dict() for doc in query_snapshot]
 
 """
 
+# 임시데이터
+market1= MarketData.objects.create(
+    공중화장실보유여부="Y",
+    사용가능상품권="온누리상품권",
+    소재지도로명주소="강원도 강릉시 금성로 21",
+    소재지지번주소="강원 강릉시 성남동 50번지",
+    시장명="중앙시장",
+    주차장보유여부="Y"
+    )
+market1.save()
+market2= MarketData.objects.create(
+    공중화장실보유여부="Y",
+    사용가능상품권="온누리상품권",
+    소재지도로명주소="서울특별시 강남구 역삼로 123",
+    소재지지번주소="서울 강남구 역삼동 123-456",
+    시장명="강남시장",
+    주차장보유여부="N"
+    )
+market2.save()
 
-# 임시 데이터
-class MarketData:
-    def __init__(self, address):
-        self.소재지도로명주소 = address
 
-temp_data = [
-    MarketData("서울특별시 강남구 역삼동"),
-    MarketData("서울특별시 서초구 양재동"),
-    MarketData("부산광역시 해운대구 우동"),
-    MarketData("부산광역시 동래구 명륜동"),
-    MarketData("대구광역시 수성구 범물동"),
-    MarketData("대구광역시 중구 대봉동")
-]
-
-
-
-# 전통시장정보데이터의 소재지도로명주소를 이용하여 대분류, 소분류
+# 시장 분류 검색(전통시장정보데이터/소재지도로명주소)
 def list_view(request):
     
     # 데이터 속 주소에 맞게 수정 예정 ex) 서울특별시 <-> 서울시
     first_categories = ["서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시",
                         "세종특별자치시", "경기도", "강원도", "충청북도", "충청남도", "전라북도", "전라남도", "경상북도",
                         "경상남도", "제주도"]
-
     second_categories = {
         "서울특별시": ["강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구",
                   "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구",
@@ -67,7 +71,7 @@ def list_view(request):
         "경상남도": ["거제시", "거창군", "고성군", "김해시", "남해군", "밀양시", "사천시", "산청군", "양산시", "의령군",
                  "진주시", "창녕군", "창원시", "통영시", "하동군", "함안군", "함양군", "합천군"],
         "제주도": ["서귀포시", "제주시"],
-}
+        }
 
     categorized_data = {}
 
@@ -75,12 +79,19 @@ def list_view(request):
         categorized_data[first_category] = {}
         for second_category in second_categories.get(first_category, []):
             categorized_data[first_category][second_category] = []
-
-    for data in temp_data: # 연동 시 market_data
-        for first_category, second_category_list in second_categories.items():
-            if data.소재지도로명주소.startswith(first_category):
-                for second_category in second_category_list:
-                    if second_category in data.소재지도로명주소:
-                        categorized_data[first_category][second_category].append(data)
-   
+    
     return render(request, 'market/list.html', {'categorized_data': categorized_data})
+
+
+# 시장 검색
+def search_view(request):
+    if request.method == 'POST':
+        first_category = request.POST.get('first_category')
+        second_category = request.POST.get('second_category')
+        search_data = MarketData.objects.filter(소재지도로명주소__startswith=first_category, 소재지도로명주소__contains=second_category)
+    return JsonResponse({'search_data': search_data})
+
+# 상세 시장 정보
+def detail_view(request, market_id):
+    market = get_object_or_404(MarketData, pk=market_id)
+    return render(request, 'market/detail.html', {'market': market})

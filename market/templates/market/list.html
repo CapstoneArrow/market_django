@@ -1,52 +1,95 @@
-미완성 시장찾기(소분류작동x)
+<a href="{% url 'home:home' %}">home</a><br><br>
 
-<body>
+<form class="row g-3 my-2" action="#" method="POST" id="searchForm">
+    <div class="col-md-3">
+        <label for="inputcity" class="form-label">시, 도</label>
+        <label for="inputcity" class="form-label" id="ssac_label"></label>
+        
+        <script type="text/javascript">
+            function select_gu(obj) {
+                var inputCountySelect = document.getElementById("inputCounty");
+                inputCountySelect.innerHTML = '<option value="" selected>선택하세요</option>';
 
-<select id="first_category">
-  <option value="" selected disabled>대분류</option>
-  {% for first_category in categorized_data.keys %}
-    <option value="{{ first_category }}">{{ first_category }}</option>
-  {% endfor %}
-</select>
+                {% for first_category, second_category in categorized_data.items %}
+                    if (obj.value == '{{ first_category }}') {
+                        {% for second_category in second_category %}
+                            var optionElement = document.createElement('option');
+                            optionElement.value = '{{ second_category }}';
+                            optionElement.textContent = '{{ second_category }}';
+                            inputCountySelect.appendChild(optionElement);
+                        {% endfor %}
+                    }
+                {% endfor %}
+            }
+        </script>
 
-<select id="second_category" disabled>
-  <option value="" selected disabled>소분류</option>
-</select>
+        <select id="inputcity" class="form-select" name="jcity" required onchange="select_gu(this);">
+            <option value="" selected>선택하세요</option>
+            {% for first_category in categorized_data.keys %}
+                <option value="{{ first_category }}">{{ first_category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label for="inputCounty" class="form-label">군,구</label>
+        <select id="inputCounty" class="form-select" name="jcounty" required>
+            <option value="none">선택하세요</option>
+        </select>
+    </div>
+    <input type = "submit" value = "검색" onclick="search(); return false;">
 
-<div id="market_data"></div>
 
-<script>
-document.getElementById('first_category').addEventListener('change', function() {
-  var selectedFirstCategory = this.value;
-  var secondCategoryDropdown = document.getElementById('second_category');
-  
-  secondCategoryDropdown.disabled = false;
-  
-  secondCategoryDropdown.innerHTML = '<option value="" selected disabled>소분류</option>';
-  
-  var secondCategories = categorized_data[selectedFirstCategory];
-  for (var secondCategory in secondCategories) {
-    var option = document.createElement('option');
-    option.value = secondCategory;
-    option.textContent = secondCategory;
-    secondCategoryDropdown.appendChild(option);
-  }
-});
 
-document.getElementById('second_category').addEventListener('change', function() {
-  var selectedSecondCategory = this.value;
-  var selectedFirstCategory = document.getElementById('first_category').value;
-  
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/market/data?first_category=' + selectedFirstCategory + '&second_category=' + selectedSecondCategory, true);
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      document.getElementById('market_data').innerHTML = xhr.responseText;
+    <div id="search_results">
+    </div>
+
+
+
+    <script>
+    function search() {
+        var formData = new FormData(document.getElementById("searchForm"));
+        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "{% url 'market:list' %}", true);
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.onload = function() {
+            var response = xhr.responseText;
+            displayResults(response.search_data);
+        };
+        xhr.send(formData);
     }
-  };
-  xhr.send();
-});
-</script>
+    
+    function displayResults(data) {
+        var container = document.getElementById("search_results");
+        container.innerHTML = ""; 
+    
+        if (data && data !== null && data !== undefined) {
+            var ul = document.createElement("ul");
+    
+            data.forEach(function(item) {
+                var li = document.createElement("li");
+                ul.appendChild(li);
+            });
+            container.appendChild(ul); 
+        } else {
+            container.textContent = "검색 결과가 없습니다.";
+        }
+    }
 
-</body>
-</html>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
+
+</form>

@@ -18,7 +18,8 @@ from firebase_admin import credentials
 AUTH_USER_MODEL = 'users.User'
 POST_MODEL = 'post.Post'
 
-#개발 중 임시 개인 파이어베이스 연동
+# 개발 중 임시 개인 파이어베이스 연동
+# 연동 시 키 받아와서 작동 확인
 cred = credentials.Certificate('capst-6fafb-firebase-adminsdk-mefgr-b60f4d1f4e.json')
 databaseURL = 'https://capst-6fafb-default-rtdb.asia-southeast1.firebasedatabase.app'
 firebase_admin.initialize_app(cred, {
@@ -26,6 +27,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 # 개발 중 로컬에서 시행을 위해 전송 메일을 콘솔에 출력
+# 서버 연결 시 삭제합니다
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
