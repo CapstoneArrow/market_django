@@ -19,7 +19,7 @@ AUTH_USER_MODEL = 'users.User'
 POST_MODEL = 'post.Post'
 
 # 개발 중 임시 개인 파이어베이스 연동
-# 연동 시 키 받아와서 작동 확인
+# 연동 시 키 교체
 cred = credentials.Certificate('capst-6fafb-firebase-adminsdk-mefgr-b60f4d1f4e.json')
 databaseURL = 'https://capst-6fafb-default-rtdb.asia-southeast1.firebasedatabase.app'
 firebase_admin.initialize_app(cred, {
@@ -57,6 +57,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# 접근허용
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -70,7 +72,9 @@ INSTALLED_APPS = [
     'home',
     'users',
     'market',
-    'post'
+    'post',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +85,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'capstProject.urls'
