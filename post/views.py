@@ -1,9 +1,33 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Post, Attachment
 from .forms import PostForm
-from django.contrib import messages
+from .serializers import PostSerializer, AttachmentSerializer
 from firebase_admin import db
+from rest_framework import viewsets, permissions
+
+
+
+
+class IsAuthorOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.author == request.user
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+class AttachmentViewSet(viewsets.ModelViewSet):
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSerializer
 
 
 # 게시글 생성
@@ -15,7 +39,6 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-
             return redirect('post:view_post', post_id=post.id)
     else:
         form = PostForm()
@@ -32,11 +55,12 @@ def edit_post(request, post_id):
             post.title = request.POST.get('title')
             post.content = request.POST.get('content')
             attachments = request.FILES.getlist('attachments')
-
-            Attachment.objects.filter(post=post).delete()
+            
+            for attachment in post.attachments.all():
+                attachment.file.delete()  # 실제 파일 시스템에서 삭제
+                attachment.delete()
             for attachment in attachments:
                 Attachment.objects.create(post=post, file=attachment)
-            
             post.save()
             edit_post_to_firebase(post)
 
@@ -56,9 +80,13 @@ def edit_post_to_firebase(post):
         'content': post.content,
         'author_id': post.author.id
     })
+    
     # 게시글에 대한 첨부 파일 정보 수정
     attachments_ref = post_ref.child('attachments')
-    attachments_ref.delete()  # 기존 첨부 파일 정보 삭제
+    existing_attachments = attachments_ref.get() or {}
+    for key in existing_attachments:
+        attachments_ref.child(key).delete()  # 기존 첨부 파일 정보 삭제
+    
     for attachment in post.attachments.all():
         attachment_ref = attachments_ref.push()
         attachment_ref.set({
@@ -85,5 +113,5 @@ def view_post(request, post_id):
 
 # 게시글 목록
 def post_list(request):
-    post = Post.objects.all()
-    return render(request, 'post/post_list.html', {'post': post})
+    posts = Post.objects.all()
+    return render(request, 'post/post_list.html', {'posts': posts})

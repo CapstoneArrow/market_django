@@ -1,6 +1,12 @@
 from django.db import models
 from django.conf import settings
-from firebase_admin import db
+from firebase_admin import db, initialize_app
+
+try:
+    initialize_app()
+except ValueError:
+    pass
+
 
 class Post(models.Model):
     firebase_id = models.CharField(max_length=255, unique=True, null=True)
@@ -15,6 +21,12 @@ class Post(models.Model):
         super().save(*args, **kwargs)
         if not self.firebase_id:
             self.sync_with_firebase()
+        else:
+            self.update_firebase()
+
+    def delete(self, *args, **kwargs):
+        self.remove_from_firebase()
+        super().delete(*args, **kwargs)
 
     def sync_with_firebase(self):
         ref = db.reference('posts').push()
@@ -24,7 +36,19 @@ class Post(models.Model):
             'author_id': self.author.id
         })
         self.firebase_id = ref.key
-        self.save(update_fields=['firebase_id'])
+        super().save(update_fields=['firebase_id'])
+
+    def update_firebase(self):
+        ref = db.reference('posts').child(self.firebase_id)
+        ref.update({
+            'title': self.title,
+            'content': self.content,
+            'author_id': self.author.id
+        })
+
+    def remove_from_firebase(self):
+        ref = db.reference('posts').child(self.firebase_id)
+        ref.delete()
 
 
 class Attachment(models.Model):
@@ -48,4 +72,6 @@ class Attachment(models.Model):
 
     def remove_from_post(self):
         attachments_ref = db.reference('posts').child(self.post.firebase_id).child('attachments')
-        attachments_ref.order_by_child('file_name').equal_to(self.file.name).get().reference.delete()
+        query = attachments_ref.order_by_child('file_name').equal_to(self.file.name)
+        for snapshot in query.get().items():
+            attachments_ref.child(snapshot.key).delete()

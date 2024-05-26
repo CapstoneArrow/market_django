@@ -14,7 +14,7 @@
     <h1>게시물 목록</h1>
     <br><a href="{% url 'post:create_post' %}">작성</a>
     <ul>
-        {% for single_post in post %}
+        {% for single_post in posts %}
             <li><a href="{% url 'post:view_post' post_id=single_post.id %}">{{ single_post.title }}</a></li>
         {% endfor %}
     </ul>
