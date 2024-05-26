@@ -39,6 +39,9 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
+            attachments = request.FILES.getlist('attachments')
+            for attachment in attachments:
+                Attachment.objects.create(post=post, file=attachment)
             return redirect('post:view_post', post_id=post.id)
     else:
         form = PostForm()
