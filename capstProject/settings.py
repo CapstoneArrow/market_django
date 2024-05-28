@@ -56,6 +56,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     ".ap-northeast-2.compute.amazonaws.com",
     ".tradi-market.site",
+    "127.0.0.1"
 ]
 
 # 접근허용
@@ -75,8 +76,19 @@ INSTALLED_APPS = [
     'market',
     'post',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

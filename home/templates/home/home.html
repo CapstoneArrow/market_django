@@ -1,7 +1,26 @@
 home
 
-<br><br>
+<br><br><br>
 
-<a href="{% url 'user:login' %}">유저(commit#6 이후 REST API로 변환됨)</a><br>
+<a href="{% url 'user:login' %}">유저</a><br>
 <a href="{% url 'market:list' %}">시장찾기(X)</a><br>
 <a href="{% url 'post:post_list' %}">지역축제</a>
+
+<br><br><br><br><br><br>
+
++수정<br>
+유저, 축제 게시글 기능 React에 REST API로 사용<br>
+아래는 REST API<br><br>
+
+User rest api<br>
+<a href="https://tradi-market.site/auth/login/">로그인</a>(POST) : https://tradi-market.site/auth/login/<br>
+<a href="https://tradi-market.site/auth/logout/">로그아웃</a>(POST) : https://tradi-market.site/auth/logout/<br>
+<a href="https://tradi-market.site/auth/signup/">회원가입</a>(POST) : https://tradi-market.site/auth/signup/<br>
+<a href="https://tradi-market.site/auth/find_username/">아이디찾기</a>(POST) : https://tradi-market.site/auth/find_username/<br>
+<a href="https://tradi-market.site/auth/find_password/">비밀번호찾기</a>(POST) : https://tradi-market.site/auth/find_password/<br>
+<a href="https://tradi-market.site/auth/update_profile/">회원정보수정</a>(POST, PUT) : https://tradi-market.site/auth/update_profile/<br><br>
+
+Post rest api(연동 시 post의 model.py와 view.py viewset 참고해주세요)<br>
+<a href="https://tradi-market.site/post/api/">api root</a> : https://tradi-market.site/post/api/<br>
+<a href="https://tradi-market.site/post/api/posts/">posts</a> : https://tradi-market.site/post/api/posts/<br>
+<a href="https://tradi-market.site/post/api/attachments/">attachments</a> : https://tradi-market.site/post/api/attachments/<br>

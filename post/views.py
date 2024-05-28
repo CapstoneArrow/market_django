@@ -5,29 +5,41 @@ from .models import Post, Attachment
 from .forms import PostForm
 from .serializers import PostSerializer, AttachmentSerializer
 from firebase_admin import db
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
-
-
-class IsAuthorOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        return obj.author == request.user
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    def post_create(self, serializer):
+        post = serializer.save(author=self.request.user)
+        post.sync_with_firebase()
+
+    def post_update(self, serializer):
+        post = serializer.save()
+        post.update_firebase()
+
+    def post_delete(self, instance):
+        instance.remove_from_firebase()
+        instance.delete()
 
 
 class AttachmentViewSet(viewsets.ModelViewSet):
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        attachment = serializer.save()
+        attachment.sync_with_post()
+
+    def perform_delete(self, instance):
+        instance.remove_from_post()
+        instance.delete()
 
 
 # 게시글 생성
