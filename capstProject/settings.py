@@ -26,8 +26,6 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://capst-6fafb-default-rtdb.asia-southeast1.firebasedatabase.app'
 })
 
-# 개발 중 로컬에서 시행을 위해 전송 메일을 콘솔에 출력
-# 서버 연결 시 삭제합니다
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
