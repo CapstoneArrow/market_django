@@ -54,7 +54,8 @@ SECRET_KEY = get_secret("SECRET_KEY")
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    ".ap-northeast-2.compute.amazonaws.com"
+    ".ap-northeast-2.compute.amazonaws.com",
+    ".tradi-market.site",
 ]
 
 # 접근허용
