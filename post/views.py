@@ -56,7 +56,7 @@ class AttachmentViewSet(viewsets.ModelViewSet):
 
 
 # 게시글 생성
-@login_required
+@login_required(login_url='/auth/login/')
 def create_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -73,12 +73,15 @@ def create_post(request):
             return redirect('post:view_post', post_id=post.id)
     else:
         form = PostForm()
-    return render(request, 'post/create_post.html', {'form': form})    
+    if not request.user.is_authenticated:
+        messages.warning(request, '게시글을 작성하려면 로그인이 필요합니다.')
+
+    return render(request, 'post/create_post.html', {'form': form})
+    
     
 
-
 # 게시글 수정
-@login_required
+@login_required(login_url='/auth/login/')
 def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.user == post.author:
@@ -101,7 +104,7 @@ def edit_post(request, post_id):
         return render(request, 'post/edit_post.html', {'post': post})
     else:
         messages.error(request, "게시글 수정 권한이 없습니다.")
-        return redirect('post:view_post', post_id=post.id)
+    return redirect('post:view_post', post_id=post.id)
 
 
 # Firebase 정보 수정
@@ -129,7 +132,7 @@ def edit_post_to_firebase(post):
 
 
 # 게시글 삭제
-@login_required
+@login_required(login_url='/auth/login/')
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.user == post.author:

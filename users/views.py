@@ -46,19 +46,23 @@ def logout_api_view(request):
 def signup_api_view(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        user = serializer.save()
+        if len(request.data["username"]) < 8 or len(request.data["password"]) < 8:
+            return Response({'error': '아이디와 비밀번호는 8자 이상이어야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user = serializer.save()
+            # firebase
+            ref = db.reference('users/'+user.username)
+            ref.set({
+                'username' : user.username,
+                'password' : user.password,
+                'email' : user.email
+            })
+            messages.success(request, "회원가입이 완료되었습니다.")
+            return Response({'message': '회원가입 되었습니다.'}, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # firebase
-        ref = db.reference('users/'+user.username)
-        ref.set({
-            'username' : user.username,
-            'password' : user.password,
-            'email' : user.email
-        })
-        return Response({'message': '회원가입 되었습니다.'}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+        
 # 아이디 찾기 rest api
 @api_view(['POST'])
 def find_username_api_view(request):
@@ -188,18 +192,26 @@ def logout_view(request):
 # 회원가입
 def signup_view(request):
     if request.method == "POST":
-        user = User.objects.create_user(
-            username=request.POST["username"],
-            password=request.POST["password"],
-            email=request.POST["email"]
-            )
-        ref = db.reference('users/'+user.username)
-        ref.set({
-            'username' : user.username,
-            'password' : user.password,
-            'email' : user.email
-        })
-        return redirect("user:login")
+        username = request.POST["username"]
+        password = request.POST["password"]
+        email = request.POST["email"]
+
+        if len(username) < 8:
+            messages.error(request, "아이디는 8자 이상이어야 합니다.")
+            return redirect('user:signup')
+        elif len(password) < 8:
+            messages.error(request, "비밀번호는 8자 이상이어야 합니다.")
+            return redirect('user:signup')
+        else:
+            user = User.objects.create_user(username=username, password=password, email=email)
+            ref = db.reference('users/'+user.username)
+            ref.set({
+                'username' : user.username,
+                'password' : user.password,
+                'email' : user.email
+            })
+            messages.success(request, "회원가입이 완료되었습니다.")
+            return redirect("user:login")
 
     return render(request, "users/signup.html")
 

@@ -17,7 +17,7 @@ class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} - 작성자: {self.author.username}"
     
     # 저장/수정
     def save(self, *args, **kwargs):

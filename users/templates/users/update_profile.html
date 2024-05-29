@@ -6,7 +6,7 @@
 <form method="post">
     {% csrf_token %}
     <label for="username">*아이디:</label><br>
-    <input type="text" id="username" name="username" value="{{ user.username }}" readonly><br><br>
+    <input type="text" id="username" name="username" value="{{ user.username }}" required><br><br>
     
     <label for="email">*이메일:</label><br>
     <input type="email" id="email" name="email" value="{{ user.email }}" required><br><br>
@@ -26,6 +26,12 @@
 
 <a href="{% url 'user:login' %}">이전으로</a><br>
 
-{% for message in messages %}
-    <p>{{ message }}</p>
-{% endfor %}
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tag %}{{ message.tags }}{% endif %}" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

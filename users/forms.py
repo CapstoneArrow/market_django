@@ -12,24 +12,27 @@ class UpdateUserForm(UserChangeForm):
     new_password = forms.CharField(label="New Password", widget=forms.PasswordInput, required=False)
     confirm_new_password = forms.CharField(label="Confirm New Password", widget=forms.PasswordInput, required=False)
 
-
-    # 기본적으로 유저의 username, email 정보 칸 채워짐
     class Meta:
         model = User
         fields = ('username', 'email')
 
-    # 현재 비밀번호 일치 여부
     def clean_current_password(self):
         current_password = self.cleaned_data.get('current_password')
         if not self.instance.check_password(current_password):
             raise forms.ValidationError("현재 비밀번호가 일치하지 않습니다.")
         return current_password
     
-    # 새로운 비밀번호와 비밀번호 확인 일치 여부
     def clean(self):
         cleaned_data = super().clean()
         new_password = cleaned_data.get('new_password')
         confirm_new_password = cleaned_data.get('confirm_new_password')
-        if new_password != confirm_new_password:
-            raise forms.ValidationError("새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+        if len(cleaned_data.get('username')) < 8:
+            raise forms.ValidationError("아이디는 8자 이상이어야 합니다.")
+        
+        if new_password :
+            if new_password != confirm_new_password:
+                raise forms.ValidationError("새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+            elif len(new_password) < 8:
+                raise forms.ValidationError("새로운 비밀번호는 8자 이상이어야 합니다.")
+        
         return cleaned_data
