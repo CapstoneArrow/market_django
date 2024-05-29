@@ -45,7 +45,7 @@
     - 사용자 필드 = ['id', 'username', 'password', 'email']
       - username, password는 회원가입 및 정보수정 시 8자리 이상 입력받도록 설정했습니다.
       - username, email은 중복 불가하도록 설정했습니다.
-      - 아이디/비밀번호 찾기 기능은 이메일 전송(SMTP)을 통해 진행됩니다.
+      - username, password 찾기 기능은 이메일 전송(SMTP)을 통해 진행됩니다.
 <br><br>
 
 ## 🌿 주요 패키지
