@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os, json
 from django.core.exceptions import ImproperlyConfigured
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 import firebase_admin
 from firebase_admin import credentials
 
@@ -23,6 +26,10 @@ databaseURL = 'https://capst-6fafb-default-rtdb.asia-southeast1.firebasedatabase
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://capst-6fafb-default-rtdb.asia-southeast1.firebasedatabase.app'
 })
+
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({'csrfToken': get_token(request)})
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
