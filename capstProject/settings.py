@@ -18,15 +18,11 @@ from firebase_admin import credentials
 AUTH_USER_MODEL = 'users.User'
 POST_MODEL = 'post.Post'
 
-# 개발 중 임시 개인 파이어베이스 연동
-# 연동 시 키 교체
 cred = credentials.Certificate('capst-6fafb-firebase-adminsdk-mefgr-b60f4d1f4e.json')
 databaseURL = 'https://capst-6fafb-default-rtdb.asia-southeast1.firebasedatabase.app'
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://capst-6fafb-default-rtdb.asia-southeast1.firebasedatabase.app'
 })
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,6 +43,16 @@ def get_secret(setting, secrets=secrets):
     except KeyError:
         error_msg = "Set the {} environment variable".format(setting)
         raise ImproperlyConfigured(error_msg)
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = get_secret("EMAIL_HOST")
+EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 SECRET_KEY = get_secret("SECRET_KEY")
 

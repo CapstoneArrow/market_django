@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
-from django.core.mail import send_mail
 from django.shortcuts import render, redirect
+from django.core.mail import send_mail
 from django.contrib import messages
 from .models import User
 from .forms import UpdateUserForm
@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import UserSerializer
+from django.conf import settings
 
 
 # 로그인
@@ -61,7 +62,7 @@ def find_username_api_view(request):
         send_mail(
             '전통시장 아이디 찾기',
             f'가입된 아이디: {user.username}\n발신용 이메일 주소입니다.',
-            'jeontong@sijang.com', # 표시되는 발송자 이메일 주소
+            settings.EMAIL_HOST_USER, # 표시되는 발송자 이메일 주소
             [email],
             fail_silently=False,
         )
@@ -90,7 +91,7 @@ def find_password_api_view(request):
         send_mail(
             '전통시장 임시 비밀번호 발급',
             f'임시 비밀번호(변경 권장): {temp_password}\n발신용 이메일 주소입니다.',
-            'jeontong@sijang.com',  # 표시되는 발송자 이메일 주소
+            settings.EMAIL_HOST_USER,  # 표시되는 발송자 이메일 주소
             [email],
             fail_silently=False,
         )
@@ -192,7 +193,7 @@ def find_username_view(request):
             send_mail(
                 '전통시장 아이디 찾기',
                 f'가입된 아이디: {user.username}',
-                'jeontong@sijang.com', # 표시되는 발송자 이메일 주소
+                settings.EMAIL_HOST_USER, # 표시되는 발송자 이메일 주소
                 [email],
                 fail_silently=False,
             )
@@ -225,7 +226,7 @@ def find_password_view(request):
             send_mail(
                 '전통시장 임시 비밀번호 발급',
                 f'임시 비밀번호(변경 권장): {temp_password}',
-                'jeontong@sijang.com',  # 표시되는 발송자 이메일 주소
+                settings.EMAIL_HOST_USER,  # 표시되는 발송자 이메일 주소
                 [email],
                 fail_silently=False,
             )
