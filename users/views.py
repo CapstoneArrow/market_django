@@ -192,7 +192,7 @@ def find_username_view(request):
             user = User.objects.get(email=email)
             send_mail(
                 '전통시장 아이디 찾기',
-                f'가입된 아이디: {user.username}',
+                f'가입된 아이디: {user.username}\n발신용 이메일 주소입니다.',
                 settings.EMAIL_HOST_USER, # 표시되는 발송자 이메일 주소
                 [email],
                 fail_silently=False,
@@ -225,7 +225,7 @@ def find_password_view(request):
 
             send_mail(
                 '전통시장 임시 비밀번호 발급',
-                f'임시 비밀번호(변경 권장): {temp_password}',
+                f'임시 비밀번호(변경 권장): {temp_password}\n발신용 이메일 주소입니다.',
                 settings.EMAIL_HOST_USER,  # 표시되는 발송자 이메일 주소
                 [email],
                 fail_silently=False,
