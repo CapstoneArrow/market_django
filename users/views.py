@@ -13,6 +13,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import UserSerializer
 from django.conf import settings
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+
+
+def get_csrf_token(request):
+    return JsonResponse({'csrfToken': get_token(request)})
 
 
 # 로그인

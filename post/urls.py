@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import PostViewSet, AttachmentViewSet
+from .views import PostViewSet, AttachmentViewSet, get_csrf_token
 from . import views
 
 app_name = "post"
@@ -10,6 +10,7 @@ router.register(r'posts', PostViewSet)
 router.register(r'attachments', AttachmentViewSet)
 
 urlpatterns = [
+    path('api/csrf_token/', get_csrf_token),
     path('api/', include(router.urls)),
     path('create/', views.create_post, name='create_post'),
     path('<int:post_id>/edit/', views.edit_post, name='edit_post'),

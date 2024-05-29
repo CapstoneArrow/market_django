@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
+from .views import get_csrf_token
 
 app_name = "user"
 
 urlpatterns = [
+    path('api/csrf_token/', get_csrf_token),
     path("api/login/", views.login_api_view),
     path("api/logout/", views.logout_api_view),
     path("api/signup/", views.signup_api_view),

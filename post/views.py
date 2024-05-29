@@ -7,7 +7,11 @@ from .serializers import PostSerializer, AttachmentSerializer
 from firebase_admin import db
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 
+def get_csrf_token(request):
+    return JsonResponse({'csrfToken': get_token(request)})
 
 
 class PostViewSet(viewsets.ModelViewSet):

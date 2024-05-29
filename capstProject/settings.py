@@ -67,6 +67,8 @@ ALLOWED_HOSTS = [
 
 # 접근허용
 CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = ['https://tradi-market.site']
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
