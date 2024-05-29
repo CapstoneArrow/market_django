@@ -46,19 +46,30 @@ def logout_api_view(request):
 def signup_api_view(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        if len(request.data["username"]) < 8 or len(request.data["password"]) < 8:
+        username = request.data["username"]
+        password = request.data["password"]
+        email = request.data["email"]
+
+        if len(username) < 8 or len(password) < 8:
             return Response({'error': '아이디와 비밀번호는 8자 이상이어야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            user = serializer.save()
-            # firebase
-            ref = db.reference('users/'+user.username)
-            ref.set({
-                'username' : user.username,
-                'password' : user.password,
-                'email' : user.email
-            })
-            messages.success(request, "회원가입이 완료되었습니다.")
-            return Response({'message': '회원가입 되었습니다.'}, status=status.HTTP_201_CREATED)
+        
+        if User.objects.filter(username=username).exists():
+            return Response({'error': '이미 사용 중인 아이디입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if User.objects.filter(email=email).exists():
+            return Response({'error': '이미 사용 중인 이메일입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = serializer.save()
+        # firebase
+        ref = db.reference('users/' + user.username)
+        ref.set({
+            'username': user.username,
+            'password': user.password,
+            'email': user.email
+        })
+        messages.success(request, "회원가입이 완료되었습니다.")
+        return Response({'message': '회원가입 되었습니다.'}, status=status.HTTP_201_CREATED)
+            
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -201,6 +212,12 @@ def signup_view(request):
             return redirect('user:signup')
         elif len(password) < 8:
             messages.error(request, "비밀번호는 8자 이상이어야 합니다.")
+            return redirect('user:signup')
+        elif User.objects.filter(username=username).exists():
+            messages.error(request, "이미 사용 중인 아이디입니다.")
+            return redirect('user:signup')
+        elif User.objects.filter(email=email).exists():
+            messages.error(request, "이미 사용 중인 이메일입니다.")
             return redirect('user:signup')
         else:
             user = User.objects.create_user(username=username, password=password, email=email)
