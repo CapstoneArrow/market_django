@@ -32,14 +32,16 @@
 - **market** : 지역별 대분류/소분류 기능을 수행하는 검색 기능 앱입니다.
 
 - **post** : firebase와 연동된 게시글 등록 기능의 앱입니다.
-  * 게시글 목록/읽기/게시/수정/삭제 와 함께 viewset을 통해 REST API 기능을 제공합니다.
+  * 게시글 목록/읽기/게시/수정/삭제와 함께 viewset을 통해 REST API 기능을 제공합니다.
+    - 게시물 필드 : ['id', 'firebase_id', 'title', 'content', 'author', 'attachments']
+    - 첨부파일 필드 : ['id', 'file', 'post']
     - 목록/읽기 : 모든 사용자
     - 게시 : 로그인 된 사용자
     - 수정/삭제 : 해당 게시글을 게시한 사용자
 
 - **users** : firebase와 연동된 사용자 기능의 앱입니다.
   * 사용자 회원가입/로그인/로그아웃/아이디 찾기/비밀번호 찾기/회원정보 수정 및 각각의 REST API 기능을 제공합니다.
-    - 사용자 필드 = [username, password, email]
+    - 사용자 필드 = ['id', 'username', 'password', 'email']
     - 아이디/비밀번호 찾기 기능은 이메일 전송(SMTP)을 통해 진행됩니다.
 <br><br>
 
