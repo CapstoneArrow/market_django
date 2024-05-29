@@ -1,4 +1,4 @@
-# Django
+# Traditional Market - Django
 
 <details>
 <summary>📕 Django guide</summary>
