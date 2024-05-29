@@ -14,36 +14,45 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
 
+
+# ViewSet (게시물)
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    # 생성
     def post_create(self, serializer):
         post = serializer.save(author=self.request.user)
         post.sync_with_firebase()
 
+    # 수정
     def post_update(self, serializer):
         post = serializer.save()
         post.update_firebase()
 
+    # 삭제
     def post_delete(self, instance):
         instance.remove_from_firebase()
         instance.delete()
 
 
+# ViewSet (첨부파일)
 class AttachmentViewSet(viewsets.ModelViewSet):
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    #생성
     def perform_create(self, serializer):
         attachment = serializer.save()
         attachment.sync_with_post()
 
+    #삭제
     def perform_delete(self, instance):
         instance.remove_from_post()
         instance.delete()
+
 
 
 # 게시글 생성
@@ -51,13 +60,16 @@ class AttachmentViewSet(viewsets.ModelViewSet):
 def create_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
+
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             post.save()
+
             attachments = request.FILES.getlist('attachments')
             for attachment in attachments:
                 Attachment.objects.create(post=post, file=attachment)
+
             return redirect('post:view_post', post_id=post.id)
     else:
         form = PostForm()
@@ -76,10 +88,12 @@ def edit_post(request, post_id):
             attachments = request.FILES.getlist('attachments')
             
             for attachment in post.attachments.all():
-                attachment.file.delete()  # 실제 파일 시스템에서 삭제
-                attachment.delete()
+                attachment.file.delete() 
+                attachment.delete() # 기존 첨부 파일 정보 삭제
+                
             for attachment in attachments:
                 Attachment.objects.create(post=post, file=attachment)
+
             post.save()
             edit_post_to_firebase(post)
 
@@ -123,6 +137,7 @@ def delete_post(request, post_id):
         ref.child(post.firebase_id).delete()
         post.delete()
     return redirect('post:post_list')
+
 
 # 게시글 읽기
 def view_post(request, post_id):

@@ -20,7 +20,6 @@ market1= MarketData.objects.create(
     시장명="중앙시장",
     주차장보유여부="Y"
     )
-market1.save()
 market2= MarketData.objects.create(
     공중화장실보유여부="Y",
     사용가능상품권="온누리상품권",
@@ -29,6 +28,7 @@ market2= MarketData.objects.create(
     시장명="강남시장",
     주차장보유여부="N"
     )
+market1.save()
 market2.save()
 
 

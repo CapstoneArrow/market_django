@@ -21,7 +21,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
 
-# 로그인
+# 로그인 rest api
 @api_view(['POST'])
 def login_api_view(request):
     username = request.data.get("username")
@@ -34,14 +34,14 @@ def login_api_view(request):
         return Response({'error': '이메일 또는 비밀번호가 올바르지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 로그아웃
+# 로그아웃 rest api
 @api_view(['POST'])
 def logout_api_view(request):
     logout(request)
     return Response({'message': '로그아웃 되었습니다.'}, status=status.HTTP_200_OK)
 
 
-# 회원가입
+# 회원가입 rest api
 @api_view(['POST'])
 def signup_api_view(request):
     serializer = UserSerializer(data=request.data)
@@ -59,10 +59,13 @@ def signup_api_view(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 아이디 찾기
+# 아이디 찾기 rest api
 @api_view(['POST'])
 def find_username_api_view(request):
+    # email 입력받음
     email = request.data.get("email")
+
+    # email 전송
     try:
         user = User.objects.get(email=email)
         send_mail(
@@ -77,16 +80,22 @@ def find_username_api_view(request):
         return Response({'error': '입력하신 정보를 다시 확인해 주세요.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 비밀번호 찾기
+# 비밀번호 찾기 rest api
 @api_view(['POST'])
 def find_password_api_view(request):
+    # username, email 입력받음
     username = request.data.get("username")
     email = request.data.get("email")
+
+    # email 전송
     try:
         user = User.objects.get(username=username, email=email)
+
+        # random 8자리 비밀번호 생성
         temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
         user.password = make_password(temp_password)
-        # 파이어베이스에 임시 비밀번호 저장
+
+        # 파이어베이스에 발급된 임시 비밀번호로 현재 비밀번호 저장
         ref = db.reference('users/'+user.username)
         ref.update({
             'password' : temp_password
@@ -106,17 +115,23 @@ def find_password_api_view(request):
         return Response({'error': '입력하신 정보를 다시 확인해 주세요.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 회원정보 수정
+# 회원정보 수정 rest api
 @api_view(['POST', 'PUT'])
 def update_profile_api_view(request):
     if request.method == 'POST':
         form = UpdateUserForm(request.data, instance=request.user)
+
         if form.is_valid():
+
+            # 새로운 비밀번호와 비밀번호 확인란 채워지면 -> 새로운 비밀번호로 변경
             if form.cleaned_data['new_password'] and form.cleaned_data['confirm_new_password']:
                 request.user.set_password(form.cleaned_data['new_password'])
 
+            # 현재 username과 form의 username이 불일치하면 -> form의 username으로 변경
             if form.cleaned_data['username'] != request.user.username:
                 request.user.username = form.cleaned_data['username']
+
+            # 현재 email과 form의 email이 불일치하면 -> form의 email으로 변경
             if form.cleaned_data['email'] != request.user.email:
                 request.user.email = form.cleaned_data['email']
 
@@ -191,9 +206,11 @@ def signup_view(request):
 
 # 아이디 찾기
 def find_username_view(request):
+    # email 입력받음
     if request.method == "POST":
         email = request.POST.get("email")
 
+        # email 전송
         try:
             user = User.objects.get(email=email)
             send_mail(
@@ -213,15 +230,20 @@ def find_username_view(request):
 
 # 비밀번호 찾기
 def find_password_view(request):
+    # username, email 입력받음
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
+
+        # email 전송
         try:
             user = User.objects.get(username=username, email=email)
 
+            # random 8자리 비밀번호 생성
             temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
             user.password = make_password(temp_password)
 
+            # 파이어베이스에 발급된 임시 비밀번호로 현재 비밀번호 저장
             ref = db.reference('users/'+user.username)
             ref.update({
                 'password' : temp_password
@@ -242,20 +264,29 @@ def find_password_view(request):
 
     return render(request, "users/find_password.html")
 
+
 # 회원정보 수정
 def update_profile_view(request):
     if request.method == 'POST':
         form = UpdateUserForm(request.POST, instance=request.user)
+
         if form.is_valid():
+
+            # 새로운 비밀번호와 비밀번호 확인란 채워지면 -> 새로운 비밀번호로 변경
             if form.cleaned_data['new_password'] and form.cleaned_data['confirm_new_password']:
                 request.user.set_password(form.cleaned_data['new_password'])
 
+            # 현재 username과 form의 username이 불일치하면 -> form의 username으로 변경
             if form.cleaned_data['username'] != request.user.username:
                 request.user.username = form.cleaned_data['username']
+
+            # 현재 email과 form의 email이 불일치하면 -> form의 email으로 변경
             if form.cleaned_data['email'] != request.user.email:
                 request.user.email = form.cleaned_data['email']
 
             request.user.save()
+
+            # firebase
             ref = db.reference('users/'+request.user.username)
             ref.update({
                 'username' : request.user.username,

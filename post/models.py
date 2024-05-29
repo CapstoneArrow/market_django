@@ -8,7 +8,9 @@ except ValueError:
     pass
 
 
+# 게시글 model
 class Post(models.Model):
+    # field
     firebase_id = models.CharField(max_length=255, unique=True, null=True)
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -16,7 +18,8 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-
+    
+    # 저장/수정
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if not self.firebase_id:
@@ -24,10 +27,12 @@ class Post(models.Model):
         else:
             self.update_firebase()
 
+    # 삭제
     def delete(self, *args, **kwargs):
         self.remove_from_firebase()
         super().delete(*args, **kwargs)
 
+    # firebase - 저장
     def sync_with_firebase(self):
         ref = db.reference('posts').push()
         ref.set({
@@ -38,6 +43,7 @@ class Post(models.Model):
         self.firebase_id = ref.key
         super().save(update_fields=['firebase_id'])
 
+    # firebase - 수정
     def update_firebase(self):
         ref = db.reference('posts').child(self.firebase_id)
         ref.update({
@@ -46,23 +52,29 @@ class Post(models.Model):
             'author_id': self.author.id
         })
 
+    # firebase - 삭제
     def remove_from_firebase(self):
         ref = db.reference('posts').child(self.firebase_id)
         ref.delete()
 
 
+# 첨부파일 model
 class Attachment(models.Model):
+    # field
     post = models.ForeignKey(Post, related_name='attachments', on_delete=models.CASCADE)
     file = models.FileField(upload_to='attachments/')
 
+    # 저장
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.sync_with_post()
 
+    # 삭제
     def delete(self, *args, **kwargs):
         self.remove_from_post()
         super().delete(*args, **kwargs)
 
+    # firebase - 저장
     def sync_with_post(self):
         ref = db.reference('posts').child(self.post.firebase_id).child('attachments').push()
         ref.set({
@@ -70,6 +82,7 @@ class Attachment(models.Model):
             'file_name': self.file.name
         })
 
+    # firebase - 삭제
     def remove_from_post(self):
         attachments_ref = db.reference('posts').child(self.post.firebase_id).child('attachments')
         query = attachments_ref.order_by_child('file_name').equal_to(self.file.name)
