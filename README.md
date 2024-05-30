@@ -45,16 +45,31 @@
     - 사용자 필드 = ['id', 'username', 'password', 'email']
       - username, password는 회원가입 및 정보수정 시 8자리 이상 입력받도록 설정했습니다.
       - username, email은 중복 불가하도록 설정했습니다.
-      - 아이디/비밀번호 찾기 기능은 이메일 전송(SMTP)을 통해 진행됩니다.
+      - username, password 찾기 기능은 이메일 전송(SMTP)을 통해 진행됩니다.
+<br><br>
+
+## 🌿 주요 패키지
+
+- **Django 4.2.11** : Django web framework
+
+- **djangorestframework 3.15.1** : Django를 이용한 REST API 개발을 위한 패키지
+
+- **firebase-admin 6.5.0** : Firebase Admin SDK, Firebase 서비스 관리 패키지
+
+- **Pyrebase4 4.7.1** : Firebase와 Python 연동에 필요한 패키지
+
+- **python-jwt 4.1.0** : JSON Web Tokens (JWT)을 통한 인증 및 정보 교환을 용이하게 하는 패키지
+
+  ***...등 requirements.txt에서 상세 정보를 보실 수 있습니다.***
 <br><br>
 
 ## 🌿 서버 구동
 
 - React에서의 호출을 위해 서버를 구동했습니다.
 
-- 서버 구동에는 AWS (EC2, Certificate Manager, Route53), 가비아 (DNS) 서비스를 이용했습니다.
+- 서버 구동에는 AWS의 EC2, Certificate Manager, Route53 서비스를 이용했습니다.
 
-- EC2의 loadBalancer에서 https, http 모두 https로 접속 가능하도록 설정했습니다.
+- EC2 LoadBalancer에서 https, http 모두 https로 접속 가능하도록 설정했습니다.
 
 [🔗바로가기](https://tradi-market.site)
 
