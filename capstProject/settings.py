@@ -91,7 +91,8 @@ ALLOWED_HOSTS = [
 
 # 접근
 CORS_ORIGIN_ALLOW_ALL = True
-CSRF_TRUSTED_ORIGINS = ['https://tradi-market.site']
+CSRF_TRUSTED_ORIGINS = ['https://tradi-market.site',
+                        'http://market.way.s3-website-ap-southeast-2.amazonaws.com/']
 CORS_ALLOW_CREDENTIALS = True
 
 
