@@ -71,6 +71,5 @@
 
 - EC2 LoadBalancer에서 https, http 모두 https로 접속 가능하도록 설정했습니다.
 
-[🔗바로가기](https://tradi-market.site)
-
+[🔗바로가기](https://tradi-market.site) (2024.06.28 종료됨)
 
